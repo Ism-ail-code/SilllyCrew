@@ -1,4 +1,7 @@
 from fastapi import FastAPI ,HTTPException
+from matplotlib.pyplot import title
+
+from app.schema import PostCreate
 
 app=FastAPI()
 text_post={ 1:{"title":"DEMO POST","Content":"Demo Content"},
@@ -40,10 +43,19 @@ text_post={ 1:{"title":"DEMO POST","Content":"Demo Content"},
 }
 
 @app.get("/posts")
-def get_all_posts():
+def get_all_posts(limit: int = None):
+    if limit:
+        return list(text_post.values())[:limit]
     return text_post
+
+
 @app.get("/post/{id}")
 def get_post(id: int):
     if id not in text_post:
         raise HTTPException(status_code=404,detail="Post not found")
     return  text_post.get(id)
+@app.got("/posts")
+def Create_Post(post:PostCreate):
+    new_post={"title":post.title,"content":post.content}
+    text_post[max(text_post.keys())+1]=new_Post
+    return new_Post
